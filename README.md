@@ -1,129 +1,123 @@
-# NSL-KDD Intrusion Detection Project
+# IDS-ML-Project
 
-This repository provides a machine learning pipeline for detecting network intrusions using the NSL-KDD dataset. The project includes data preprocessing, model training, and a RESTful Flask API for making predictions.
+## Overview
+The **IDS-ML-Project** is a machine learning pipeline designed for network intrusion detection using the NSL-KDD dataset. The project uses a **Random Forest classifier** to detect different types of network attacks and serves predictions via a **Flask-based REST API**. Additionally, evaluation scripts are provided to generate a confusion matrix, classification report, and ROC curve to assess model performance.
 
----
-
-## **Project Structure**
-
-```plaintext
+## Project Structure
+```
 IDS-ML-Project/
-│
-├── src/
-│   ├── preprocess.py    # Module for loading and preprocessing NSL-KDD data
-│   ├── train.py         # Script to train the Random Forest model with SMOTE balancing
-│   ├── app.py           # Flask API to serve model predictions
-│   ├──evaluate.py       # Script for model evaluation (confusion matrix, ROC, etc.)
-|
-├── data/                # Folder containing the NSL-KDD dataset (KDDTrain+.txt, KDDTest+.txt)
+├── data/
 │   ├── KDDTrain+.txt       # Training dataset (NSL-KDD)
 │   └── KDDTest+.txt        # Testing dataset (NSL-KDD)
 ├── models/
 │   └── random_forest.joblib  # Saved Random Forest model
-│
-├── requirements.txt     # Python dependencies
-├── README.md            # This documentation
+├── src/
+│   ├── app.py              # Flask API to serve model predictions
+│   ├── evaluate.py         # Script for model evaluation (confusion matrix, ROC, etc.)
+│   ├── preprocess.py       # Module for loading and preprocessing NSL-KDD data
+│   └── train.py            # Script to train the Random Forest model with SMOTE balancing
+├── requirements.txt        # List of dependencies
+└── README.md               # Project documentation (this file)
 ```
 
----
-
-## **Features**
-
-- **Data Preprocessing**:  
-  - Rename columns for clarity (e.g., converting column 41 to `label` and column 42 to `difficulty`).
-  - Encode categorical values (`protocol_type`, `service`, and `flag`) into numeric values using `LabelEncoder`.
-  - Split data into features (`X`) and labels (`y`) for training and testing.
-
-- **Model Training and Evaluation**:  
-  - Train a Random Forest classifier on the preprocessed data.  
-  - Evaluate the model’s performance using metrics like accuracy, confusion matrix, and classification report.
-
-- **Flask API for Predictions**:  
-  - Serve the trained model via a RESTful API.  
-  - Provide an endpoint (`/predict`) that accepts JSON input and returns predictions (e.g., "normal", "neptune", etc.).
-
----
-
-## **Installation**
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Bilal-66/IDS-ML-Project.git
-   cd IDS-ML-Project
-   ```
-
-2. **Set up a virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## **How to Run**
-
-### **1. Data Preprocessing and Training**
-
-1. Ensure the **NSL-KDD dataset** (`KDDTrain+.txt` and `KDDTest+.txt`) is placed inside the `data/` folder.  
-2. Run the training script:
-   ```bash
-   python src/train.py
-   ```
-   - This will preprocess the data, train the Random Forest model, evaluate its performance, and save the trained model in the `models/` directory.
-
----
-
-### **2. Serving Predictions**
-
-1. Start the Flask API:
-   ```bash
-   python src/app.py
-   ```
-2. The API will be available at:
-   ```
-   http://127.0.0.1:5000
-   ```
-
----
-
-### **3. Making Predictions**
-
-You can send a POST request to the `/predict` endpoint. For example, using `curl`:
-
+## Requirements
+Install dependencies using:
 ```bash
-curl -X POST -H "Content-Type: application/json" \
--d '{"features":[0.1, 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.0, 11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8, 19.9, 20.0, 21.1, 22.2, 23.3, 24.4, 25.5, 26.6, 27.7, 28.8, 29.9, 30.0, 31.1, 32.2, 33.3, 34.4, 35.5, 36.6, 37.7, 38.8, 39.9, 40.0]}' \
-http://127.0.0.1:5000/predict
+pip install -r requirements.txt
 ```
+Additionally, if you plan to use Postman for testing your API, download and install Postman.
 
-**Example Response:**
+## Detailed Description
+
+### 1. preprocess.py
+This module contains functions to load and preprocess the NSL-KDD dataset.
+
+#### Key Functions:
+- **`load_nsl_kdd(train_path, test_path)`**: Loads training and testing datasets into pandas DataFrames.
+- **`rename_columns(df)`**: Renames columns, setting column 41 as "label" and column 42 as "difficulty".
+- **`encode_categorical(df)`**: Encodes categorical columns (protocol_type, service, and flag) using LabelEncoder.
+- **`split_dataset(df, test_size=0.2)`**: Splits the DataFrame into features (X) and target labels (y).
+
+### 2. train.py
+Trains a **Random Forest classifier** on the preprocessed NSL-KDD dataset and handles class imbalance using **SMOTE**.
+
+#### Main Steps:
+- Loads and preprocesses the dataset.
+- Handles missing labels in the test set.
+- Applies **Label Encoding** to categorical values.
+- Uses **SMOTE** to balance class distributions.
+- Trains a **Random Forest model** with `class_weight="balanced"`.
+- Saves the trained model to `models/random_forest.joblib`.
+- Tests the model on a real attack sample and prints predictions.
+
+### 3. app.py
+A **Flask API** to serve predictions from the trained model.
+
+#### Key Features:
+- **Endpoint `/predict`**: Accepts POST requests with a JSON payload containing numeric features.
+- **Prediction Process**: Loads the trained model and returns a **prediction with confidence score**.
+
+### 4. evaluate.py
+Evaluates model performance using the **test dataset**.
+
+#### Key Features:
+- Computes **confusion matrix** and **classification report**.
+- Ensures **label encoding consistency** between training and test sets.
+- Computes and plots the **ROC curve** for binary classification.
+
+#### Evaluation Results
+##### Attack Detection Example:
+![Attack Detection](attack.png)
+
+##### Normal Traffic Example:
+![Normal Traffic](normal.png)
+
+##### Classification Report and ROC Curve:
+![Classification Report & ROC](rapport de classification et la courbe ROC.png)
+
+## Running the Project
+
+### Training the Model
+Ensure your NSL-KDD datasets (`KDDTrain+.txt` and `KDDTest+.txt`) are in the `data/` folder. Then run:
+```bash
+python train.py
+```
+This will preprocess the data, balance classes, train the model, and save it.
+
+### Running the API
+Start the Flask API by running:
+```bash
+python app.py
+```
+The API will run on `http://127.0.0.1:5000`.
+
+#### Example Request
+Use Postman or any HTTP client to send a **POST** request to `/predict` with a JSON payload:
 ```json
-{"prediction": "normal"}
+{
+    "features": [/* list of 41 numeric feature values */]
+}
 ```
+The API will return a JSON response with the **prediction and confidence score**.
+
+### Evaluating the Model
+Run the evaluation script:
+```bash
+python evaluate.py
+```
+This will output **classification metrics** and plot the **ROC curve**.
+
+## Additional Notes
+
+### Preprocessing Consistency
+Ensure that API inputs are preprocessed identically to the training data.
+
+### Model Improvement
+Experiment with different classifiers, adjust SMOTE parameters, or fine-tune **Random Forest** hyperparameters.
+
+### Deployment
+For production, use a **WSGI server** (e.g., Gunicorn) and add logging & monitoring.
 
 ---
-
-## **Dataset**
-
-The NSL-KDD dataset is a widely used benchmark dataset for evaluating intrusion detection systems. It contains both normal and attack traffic, with a variety of attack types such as DoS, R2L, U2R, and Probe.
-
-For more information about the dataset, visit the official NSL-KDD page:  
-[NSL-KDD Dataset](https://www.unb.ca/cic/datasets/nsl.html)
-
----
-
-## **Contributing**
-
-Feel free to open issues or pull requests if you find bugs, have suggestions, or want to contribute new features.
-
----
-
-## **License**
-
-This project is licensed under the [MIT License](LICENSE).
+This project provides a **robust foundation** for network intrusion detection using machine learning. Contributions and improvements are welcome!
 
