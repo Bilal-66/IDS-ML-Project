@@ -10,14 +10,16 @@ This repository provides a machine learning pipeline for detecting network intru
 IDS-ML-Project/
 │
 ├── src/
-│   ├── preprocess.py    # Functions for data loading, renaming columns, encoding categorical features
-│   ├── train.py         # Main script for training the model, evaluating its performance, and saving the trained model
-│   ├── app.py           # Flask application for serving predictions via a REST API
-│
+│   ├── preprocess.py    # Module for loading and preprocessing NSL-KDD data
+│   ├── train.py         # Script to train the Random Forest model with SMOTE balancing
+│   ├── app.py           # Flask API to serve model predictions
+│   ├──evaluate.py       # Script for model evaluation (confusion matrix, ROC, etc.)
+|
 ├── data/                # Folder containing the NSL-KDD dataset (KDDTrain+.txt, KDDTest+.txt)
-│
+│   ├── KDDTrain+.txt       # Training dataset (NSL-KDD)
+│   └── KDDTest+.txt        # Testing dataset (NSL-KDD)
 ├── models/
-│   └── random_forest.joblib   # Trained Random Forest model saved after training
+│   └── random_forest.joblib  # Saved Random Forest model
 │
 ├── requirements.txt     # Python dependencies
 ├── README.md            # This documentation
