@@ -58,7 +58,7 @@ target_names = le.inverse_transform(unique_y_true)
 print("\nClassification Report:")
 print(classification_report(y_true, y_pred, labels=unique_y_true, target_names=target_names))
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # 5. Compute and plot the ROC Curve (binary: "normal" vs "attack")
 # -----------------------------------------------------------------------------
 # For a binary ROC, consider "normal" as the negative class and everything else as "attack".
