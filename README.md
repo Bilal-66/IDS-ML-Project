@@ -73,7 +73,7 @@ Evaluates model performance using the **test dataset**.
 ![Normal Traffic](normal.png)
 
 ##### Classification Report and ROC Curve:
-![Classification Report & ROC](Classification Report & ROC.png)
+![Classification Report & ROC](Classification_Report_&_ROC.png)
 
 ## Running the Project
 
